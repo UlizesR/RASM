@@ -4,6 +4,8 @@ use std::fs;
 
 use serde::Deserialize;
 
+/// Configuration structure for loading from TOML files.
+/// All fields are optional to allow partial configuration.
 #[derive(Deserialize, Debug)]
 pub struct FileConfig 
 {
@@ -18,18 +20,18 @@ pub struct FileConfig
     pub clean: Option<bool>,
 }
 
-impl Into<Config> for FileConfig 
+impl From<FileConfig> for Config 
 {
-    fn into(self) -> Config 
+    fn from(value: FileConfig) -> Self 
     {
         Config 
         {
-            input_files: self.input_files.unwrap_or_default(),
-            output_file: self.output_file.unwrap_or_default(),
-            extra_flags: self.extra_flags.unwrap_or_default(),
-            assembler: self.assembler.unwrap_or_else(|| "as".to_string()),
-            assembler_flags: self.assembler_flags.unwrap_or_default(),
-            target: self.target.unwrap_or_else(|| {
+            input_files: value.input_files.unwrap_or_default(),
+            output_file: value.output_file.unwrap_or_default(),
+            extra_flags: value.extra_flags.unwrap_or_default(),
+            assembler: value.assembler.unwrap_or_else(|| "as".to_string()),
+            assembler_flags: value.assembler_flags.unwrap_or_default(),
+            target: value.target.unwrap_or_else(|| {
                 if cfg!(target_os = "macos") 
                 {
                     "arm64".to_string()
@@ -37,14 +39,21 @@ impl Into<Config> for FileConfig
                     "x86_64".to_string()
                 }
             }),
-            verbose: self.verbose.unwrap_or(false),
-            dry_run: self.dry_run.unwrap_or(false),
-            clean: self.clean.unwrap_or(false),
+            verbose: value.verbose.unwrap_or(false),
+            dry_run: value.dry_run.unwrap_or(false),
+            clean: value.clean.unwrap_or(false),
             config_file: None,
         }
     }
 }
 
+/// Load configuration from a TOML file.
+/// 
+/// # Arguments
+/// * `path` - Path to the TOML configuration file
+/// 
+/// # Returns
+/// A Config struct with values loaded from the file
 pub fn load_config(path: &str) -> Result<Config> 
 {
     let contents = fs::read_to_string(path)?;

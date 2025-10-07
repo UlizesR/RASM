@@ -3,6 +3,15 @@ use anyhow::Result;
 use log::{debug, info};
 use std::process::Command;
 
+/// Link object files into a final executable.
+/// 
+/// Uses platform-specific linkers:
+/// - macOS: clang with system libraries and SDK
+/// - Other: ld
+/// 
+/// # Arguments
+/// * `object_files` - List of object file paths to link
+/// * `config` - Configuration containing linker settings and output path
 pub fn link(object_files: &[String], config: &Config) -> Result<()> 
 {
     let mut cmd = if cfg!(target_os = "macos") 
@@ -14,8 +23,7 @@ pub fn link(object_files: &[String], config: &Config) -> Result<()>
         c.args(&["-e", "_start", "-arch", &config.target]);
         c
     } else {
-        let c = Command::new("ld");
-        c
+        Command::new("ld")
     };
 
     // Append all object files.
@@ -47,6 +55,8 @@ pub fn link(object_files: &[String], config: &Config) -> Result<()>
     Ok(())
 }
 
+/// Get the macOS SDK path using xcrun (macOS only).
+/// Returns None if not on macOS or if xcrun fails.
 #[cfg(target_os = "macos")]
 fn get_sdk_path() -> Option<String> 
 {
@@ -63,6 +73,7 @@ fn get_sdk_path() -> Option<String>
     }
 }
 
+/// Stub implementation for non-macOS platforms.
 #[cfg(not(target_os = "macos"))]
 fn get_sdk_path() -> Option<String> 
 {
