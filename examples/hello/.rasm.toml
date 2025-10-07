@@ -1,0 +1,7 @@
+# Example RASM configuration
+input_files = ["*.s"]
+output_file = "hello"
+assembler = "as"
+target = "arm64"
+color = "always"
+
