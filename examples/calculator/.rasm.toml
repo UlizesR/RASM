@@ -1,0 +1,9 @@
+# Calculator Example - Multi-file project
+input_files = ["main.s", "math.s"]
+output_file = "calculator"
+target = "arm64"
+color = "always"
+
+# Enable verbose to see parallel compilation
+# verbose = true
+

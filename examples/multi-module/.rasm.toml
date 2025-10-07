@@ -1,0 +1,16 @@
+# Multi-Module Example
+# Demonstrates organized project structure
+
+# Use glob pattern to compile all source files
+input_files = ["*.s"]
+output_file = "multi-module"
+
+target = "arm64"
+color = "always"
+
+# Great for development - rebuilds on file changes
+# watch = true
+
+# See parallel compilation in action
+# verbose = true
+

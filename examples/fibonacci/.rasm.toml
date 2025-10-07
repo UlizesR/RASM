@@ -1,0 +1,8 @@
+# Fibonacci Example - Recursive functions
+input_files = ["fib.s"]
+output_file = "fibonacci"
+target = "arm64"
+
+# Watch mode is great for testing changes
+# watch = true
+

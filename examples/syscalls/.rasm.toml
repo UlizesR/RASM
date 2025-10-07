@@ -1,0 +1,8 @@
+# Syscalls Example
+input_files = ["demo.s"]
+output_file = "syscalls"
+target = "arm64"
+
+# Use dry-run to see what commands would be executed
+# dry_run = true
+

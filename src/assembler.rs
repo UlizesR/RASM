@@ -114,6 +114,9 @@ mod tests {
             dry_run: false,
             clean: false,
             config_file: None,
+            watch: false,
+            color: "auto".to_string(),
+            completions: None,
         };
         
         let result = assemble("*.s", &config);
@@ -134,6 +137,9 @@ mod tests {
             dry_run: true,
             clean: false,
             config_file: None,
+            watch: false,
+            color: "auto".to_string(),
+            completions: None,
         };
         
         let result = assemble("test.s", &config);

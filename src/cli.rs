@@ -1,4 +1,5 @@
 use clap::Parser;
+use clap_complete;
 
 /// Configuration for the RASM assembler and linker.
 /// Can be specified via command-line arguments or a TOML configuration file.
@@ -7,11 +8,11 @@ use clap::Parser;
 pub struct Config 
 {
     /// Input assembly file(s) (supports glob patterns)
-    #[arg(required = true)]
+    #[arg(required_unless_present = "completions")]
     pub input_files: Vec<String>,
 
     /// Output binary file
-    #[arg(short = 'o')]
+    #[arg(short = 'o', required_unless_present = "completions", default_value = "")]
     pub output_file: String,
 
     /// Extra flags for the linker (passed as-is)
@@ -45,6 +46,18 @@ pub struct Config
     /// Path to configuration file (TOML format)
     #[arg(long)]
     pub config_file: Option<String>,
+
+    /// Watch for file changes and rebuild automatically
+    #[arg(short, long, action = clap::ArgAction::SetTrue)]
+    pub watch: bool,
+
+    /// Enable colored output (auto-detected by default)
+    #[arg(long, value_name = "WHEN", default_value = "auto")]
+    pub color: String,
+
+    /// Generate shell completions for the specified shell
+    #[arg(long, value_name = "SHELL")]
+    pub completions: Option<clap_complete::Shell>,
 }
 
 /// Returns the default target architecture based on the current platform.
@@ -104,6 +117,14 @@ impl Config {
         if other.clean 
         {
             self.clean = true;
+        }
+        if other.watch 
+        {
+            self.watch = true;
+        }
+        if other.color != "auto" 
+        {
+            self.color = other.color;
         }
     }
 
@@ -166,6 +187,9 @@ mod tests {
             dry_run: false,
             clean: false,
             config_file: None,
+            watch: false,
+            color: "auto".to_string(),
+            completions: None,
         }
     }
 

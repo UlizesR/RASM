@@ -18,6 +18,8 @@ pub struct FileConfig
     pub verbose: Option<bool>,
     pub dry_run: Option<bool>,
     pub clean: Option<bool>,
+    pub watch: Option<bool>,
+    pub color: Option<String>,
 }
 
 impl From<FileConfig> for Config 
@@ -43,6 +45,9 @@ impl From<FileConfig> for Config
             dry_run: value.dry_run.unwrap_or(false),
             clean: value.clean.unwrap_or(false),
             config_file: None,
+            watch: value.watch.unwrap_or(false),
+            color: value.color.unwrap_or_else(|| "auto".to_string()),
+            completions: None,
         }
     }
 }
@@ -59,4 +64,28 @@ pub fn load_config(path: &str) -> Result<Config>
     let contents = fs::read_to_string(path)?;
     let file_config: FileConfig = toml::from_str(&contents)?;
     Ok(file_config.into())
+}
+
+/// Auto-detect configuration file in current directory.
+/// Searches for .rasm.toml, rasm.toml, .rasm/config.toml in order.
+/// 
+/// # Returns
+/// Path to the configuration file if found, None otherwise
+pub fn auto_detect_config() -> Option<String> 
+{
+    let candidates = vec![
+        ".rasm.toml",
+        "rasm.toml",
+        ".rasm/config.toml",
+    ];
+    
+    for candidate in candidates 
+    {
+        if std::path::Path::new(candidate).exists() 
+        {
+            return Some(candidate.to_string());
+        }
+    }
+    
+    None
 }
